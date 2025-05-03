@@ -88,13 +88,6 @@ color_palette_extractor/
 ├── requirements.txt
 ├── README.md
 ```
-
----
-
-## 👤 Author
-
-**Achraf Boudabous** – [@AchrafBoudabous](https://github.com/yourusername)
-
 ---
 
 ## ⭐️ Star This Repo
