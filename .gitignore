@@ -1,0 +1,26 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+venv/
+.env/
+
+# Flask-specific
+instance/
+*.sqlite3
+*.db
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Uploads and generated files
+/static/uploads/*
+*.zip
+*.json
+*.png
+
+# VSCode project settings
+.vscode/

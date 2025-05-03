@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Color Palette Extractor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Image Color Palette Extractor</h1>
+            <button id="theme-toggle" class="theme-btn">🌓</button>
+        </div>
+        <p class="subtitle">Upload an image and instantly extract a downloadable color palette.</p>
+
+        <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+            <div id="drop-zone">
+                <p><strong>Drag & drop</strong> an image here or <span class="click-text">click to browse</span></p>
+                <input type="file" name="image" accept="image/*" required>
+            </div>
+
+            <label for="num_colors">Number of Colors:</label>
+            <select name="num_colors" id="num_colors">
+                {% for n in range(3, 11) %}
+                    <option value="{{ n }}">{{ n }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn-primary">Upload & Extract</button>
+        </form>
+
+        <div id="preview">
+            <h3>Preview:</h3>
+            <img id="preview-img" src="" alt="Preview Image">
+        </div>
+
+        <div id="loading">
+            <p>🔄 Processing your image... Please wait.</p>
+        </div>
+
+        {% if uploaded_image %}
+            <div class="results">
+                <h2>Uploaded Image</h2>
+                <img src="{{ uploaded_image }}" alt="Uploaded">
+
+                <h2>Extracted Color Palette</h2>
+                <img src="{{ palette_image }}" alt="Palette">
+
+                <div class="color-grid">
+                    {% for hex in hex_colors %}
+                        <div class="color-swatch" style="background-color: {{ hex }}">
+                            <span>{{ hex }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <h3>Download Your Palette</h3>
+                <a href="{{ url_for('download_file', filename=zip_path) }}">
+                    <button class="btn-secondary">⬇ Download as ZIP</button>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Drag & Drop preview and auto-submit
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = dropZone.querySelector('input');
+        const form = document.getElementById('uploadForm');
+        const previewDiv = document.getElementById('preview');
+        const previewImg = document.getElementById('preview-img');
+        const loadingDiv = document.getElementById('loading');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropZone.classList.add('dragging');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragging');
+        });
+
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('dragging');
+            const files = e.dataTransfer.files;
+
+            if (files.length > 0) {
+                fileInput.files = files;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    previewDiv.style.display = 'block';
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
+
+        form.addEventListener('submit', () => {
+            loadingDiv.style.display = 'block';
+        });
+
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    previewDiv.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Dark Mode Toggle
+        const toggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        toggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+        });
+
+        window.onload = () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                body.classList.add('dark-mode');
+            }
+        };
+    </script>
+</body>
+</html>
